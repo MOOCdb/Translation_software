@@ -1,0 +1,45 @@
+* OpenedX logs diagnosis
+
+- Generated :: <date>
+- Log file :: <file name>
+- File size :: <file size>
+- Total number of events :: <line counts>
+
+** Regular events
+
+| Count | Event type    | Event source |
+|-------+---------------+--------------|
+| 10000 | problem_check | server       |
+
+- Total :: 
+
+
+** [Module interaction events]
+
+| Count | Module category | Action      |
+|-------+-----------------+-------------|
+|  1000 | problem         | problem_get | 
+
+- Total ::   
+
+
+** Page access events 
+
+*** Number of URLs accessed
+
+| Threshold | # accessed URLS |
+|-----------+-----------------|
+| > 1       |                 |
+| > 100     |                 |
+| > 10,00   |                 |
+| > 10,000  |                 |
+
+
+*** 10 most accessed URLs
+
+| Access count | Relative URL | 
+  
+*** [10 most accessed courseware URLs]
+*** [10 most accessed wiki URLs]
+*** [10 most accessed forum URLs]
+
