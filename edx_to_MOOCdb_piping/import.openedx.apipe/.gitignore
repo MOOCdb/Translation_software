@@ -1,0 +1,54 @@
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+.~lock*
+json_to_relation/test/*.csv
+os
+pymysql
+sys
+argparse
+boto
+datetime
+json_to_relation/json_to_relation.py.orig
+json_to_relation/test/data/.#seekVideoWeirdQueueState.json
+logging
+re
+socket
+subprocess
+gpg
+modulestore_*
+hashLookup.pkl
+*.csv
+scripts/forumKeyPassphrase.txt

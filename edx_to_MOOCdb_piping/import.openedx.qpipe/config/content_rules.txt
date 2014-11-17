@@ -1,0 +1,14 @@
+uri, video, lecture
+uri, book, book
+uri, problem, problem
+uri, cobinedopenended, problem
+uri, wiki, wiki
+uri, thread|forum|discussion, forum
+uri, info, informational
+uri, preview, testing
+uri, about, informational
+uri, progress, informational
+uri, profile|login|account, profile
+uri, open_ended, problem
+
+

@@ -1,0 +1,2 @@
+event_type, sequential
+event_type, page_close

@@ -1,0 +1,2 @@
+page, ^$, no_url
+page, courseware/[^/]+/[^/]+, inherit_seqnum

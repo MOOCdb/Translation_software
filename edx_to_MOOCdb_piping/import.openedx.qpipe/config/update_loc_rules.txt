@@ -1,0 +1,3 @@
+event_type, page_close, close_previous_page
+event_type, seq_, update_seq
+event_type, .*, simple_update

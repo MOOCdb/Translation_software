@@ -1,0 +1,6 @@
+event_type, problem|showanswer, ProblemInteraction
+event_type, video|transcript|fullscreen, VideoInteraction
+event_type, book, PdfInteraction
+event_type, oe_|combinedopenended|rubric_select|grading, OpenResponseAssessment
+event_type, seq_, Navigational
+event_type, .*, Event

@@ -1,0 +1,11 @@
+uri, video, video
+uri, book, text
+uri, problem, text
+uri, combinedopenended, text
+uri, wiki, text
+uri, thread|forum|discussion, text
+uri, info, text
+uri, about, text
+uri, progress, text
+uri, profile, text
+uri, open_ended, text
