@@ -1,0 +1,103 @@
+<html>
+<head>
+    <title>Developer Guide</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+
+<h1 class='h1-first'>Developer Guide</h1>
+
+<h2>Last updated: April 03, 2014</h2>
+
+<h2 style="color: #750a20;">Please read the <u><a href="./users.html">user documentation</a></u> first to familiarize yourself with the entry point interface and what transformation parameters will be passed to the main function.</h2>
+
+<p>
+MoocDB scripts are essentially ETL pipelines. Our code has been designed on the principle that the 'extract' and 'transform' parts of the pipeline are platform-variant and need to be recoded for each platform/format, while the 'load' part is platform-invariant and could be factored out and shared.
+This documentation introduces the code structure, and what you need to do to add extract and transform piping for a new platform or format.
+</p>
+
+<h2 style="color: #750a20;">You are only expected to need to edit what's in .../piping_scripts/queries/&lt;your platform folder&gt;</h2>
+
+<h2>The 'vars' variable</h2>
+<p>
+This is the most important variable in the scripts, as it holds the transformation parameters as well as other data needed to perform or optimize the transformation process.
+'vars' is the variable passed to the 'main' function; the entry point of the transformation scripts. It is passed to almost every function in the scripts, since it contains all of the transformation parameters needed to connect to the source and target databases, define which platform's query set to use ... etc.
+Additionally, developers might right to 'vars' data that is required for multiple functions, so that this data may be read only once then used multiple times. A file called 'vars.py' residing in each platform's queries folder contains a function called ' AddPlatformSpecificVars', which is the space for developers to add any pre-transformation processes that extract data and add it to 'vars'.
+</p>
+
+<h2>Querying the Source Database(s)</h2>
+
+<p>
+It is recommended to use the Selector class in .../piping_scripts/utilities/db.py for querying source databases. Since queries might occur over an extended time, it is possible for connections to get dropped. The Selector class has been built to attempt to automatically reconnect to the database and rerun a failed query rather than failing the whole transformation task.
+The parameters required to connect to the database are passing to the constructor. The method 'query' maybe used to run a query against the database.
+</p>
+
+<h2>Adding a New Platform or Format</h2>
+<p>
+You might want to add support for a totally new platform, or for a platform that has significantly changed its data format so people can use the platform's older piping scripts for dumps of the older format and newer scripts for dumps of the newer format.
+Since the 'load' stage of the ETL is shared, you will only be coding the extract and transform stages. The load stage is handled by the files immediately under .../piping_scripts.
+The extract and transform code is located inside .../piping_script/queries. You will see one folder per platform.
+</p>
+
+<p>
+There are high level functions located in the files in .../piping_scripts that are responsible for the ETL of collaboration, resources, tests and submissions, and users data (one file each).
+These high-level functions are platform independent, and they expect the platform-dependent functions to be located in specific files and to have specific interfaces. For the files and function interfaces, we will use the Coursera scripts as a reference.
+Any new platform must have the same files in its folder, and the main function in each file must have the same interface. Below is a description of the files/functions that need to follow this standard.
+You will notice that some files in the Coursera folder are not described below. As long as the files and functions below are followed precisely, you are free to organize the code however you like inside your platform's folder, including creating additional files and functions.
+</p>
+
+<p>
+<b>For each of the following functions which returns a list of objects, please view to the Coursera scripts to learn which keys each object must contain. Every key in any of the Coursera objects is mandatory. Every object your scripts produce must have the same set of keys as its corresponding Coursera object.</b>
+</p>
+
+<ol>
+    <style>
+        li {margin-bottom: 10px;}
+    </style>
+    <li><b><u>books.py</u></b>: The function GetBooks(vars) must return a list of all objects that would be moocdb book objects in the resources table. Not coded in Coursera, but each object must have the same keys as a wiki object.</li>
+    <li><b><u>content_sections.py</u></b>: The function GetContentSections(vars) must return a list of all objects that would be moocdb content_section objects in the resources table.</li>
+    <li><b><u>forum_posts.py</u></b>: The function GetForumPosts(vars) must return a list of all objects that would be moocdb forum_post or forum_comment objects in the collaborations table.</li>
+    <li><b><u>forum_votes.py</u></b>: The function GetForumVotes(vars) must return a list of all objects that would be moocdb forum_vote objects in the collaborations table.</li>
+    <li><b><u>forums.py</u></b>: The function GetForums(vars) must return a list of all objects that would be moocdb forum objects in the resources table.</li>
+    <li><b><u>indices.py</u></b>: The function GetIndices(vars) must return a list of all objects that would be moocdb index_page objects in the resources table.</li>
+    <li><b><u>problems.py</u></b>: The function GetProblems(vars) must return a list of all objects that would land in the moocdb problems table.</li>
+    <li><b><u>submission_assessment_data.py</u></b>: The function GetSubmissionAndAssessmentData(vars, problem) must produce a list of all student submissions and assessments for each submission for the given problem.</li>
+    <li><b><u>tests.py</u></b>: The function GetTests(vars) must return a list of all objects that would be moocdb testing objects in the resources table.</li>
+    <li><b><u>tutorials.py</u></b>: The function GetTutorials(vars) must return a list of all objects that would be moocdb tutorial objects in the resources table.</li>
+    <li><b><u>users.py</u></b>: The function GetUsers(vars) must return a list of all objects populate the moocdb users table.</li>
+    <li><b><u>vars.py</u></b>: The function  AddPlatformSpecificVars(vars) is where developers can add stuff to 'vars'. This function takes vars as an input and must also return it as an output.</li>
+    <li><b><u>wikis.py</u></b>: The function GetWikis(vars) must return a list of all objects that would be moocdb</li>
+    <li><b><u>wiki_edits.py</u></b>: The function GetWikiEdits(vars) must return a list of all objects that would be moocdb wiki_edit objects in the collaborations table</li>
+    <li><b><u>observations/video_events.py</u></b>: The function </li>
+    <li><b><u>observations/additional_collaboration_events.py</u></b>: The function GetAdditionalCollaborationEvents(vars) must output a list of objects (related to collaborations) that would land in the moocdb observed_events table. Note that the higher-level functions for observed events will automatically insert events corresponding to the creation of forum posts, forum comments, forum votes, and wiki edits that exist in the collaboration table. Thus, this function has to limit itself to additional collaboration events not included in this set. An example would be forum posts reads if the platform provides this data, since forum reads are not loaded into the collaborations table. Each object in the returned list must conform to the key set used in the previous observed event objects.</li>
+    <li><b><u>observations/index_visits.py</u></b>: The function GetIndexVisits(vars, original_item_id) must return a list of observed events corresponding to visits to index pages, if the platform provides this data. Each object in the returned list must conform to the key set used in the previous observed event objects.</li>
+    <li><b><u>observations/test_events.py</u></b>: The function GetTestEvents(var, original_item_id) must return a list of events for the test whose ID is passed in. These events must exclude submissions of tests, problems, or assessments, since observed events are added for these in the higher-level functions to avoid double querying them. Each object in the returned list must conform to the key set used in the previous observed event objects.</li>
+    <li><b><u>observations/wiki_visits.py</u></b>: The function GetWikiVisits(vars, original_item_id) must return a list of wiki visits for the wiki whose ID is passed in if this data is provided by the platform. Each object in the returned list must conform to the key set used in the previous observed event objects.</li>
+</ol>
+
+<h2>Updating Imports</h2>
+<p>
+After you have coded all of the functions above:
+</p>
+
+<ul>
+    <li>Copy .../piping_scripts/queries/coursera/__init__.py to .../piping_scripts/queries/&lt;new folder&gt;/__init__.py</li>
+    <li>Copy .../piping_scripts/queries/coursera/observations/__init__.py to .../piping_scripts/queries/&lt;new folder&gt;/observations/__init__.py</li>
+</ul>
+
+<p>Lastly, go to .../piping_scripts/main.py, and edit the code section titled &quot;Platform-specific setup&quot; to add an entry for the new platform similar to the existing ones.</p>
+
+<h2>Using what's in moocdb_core</h2>
+<p>
+The moocdb_core database is a database that will be setup anyway by the user. Whenever you could rely on what it provides rather than requiring the user to run additional setup, please do.
+Currently, moocdb_core contains:
+</p>
+
+<ul>
+    <li>An IP-country translation table</li>
+    <li>A country-timezone translation table</li>
+    <li>The user_types, resource_types, observed_event_types, and collaboration_types tables from which the types are copied to the output database. If we need to add any new types, we should edit these tables in moocdb_core.</li>
+</ul>
+
+</body>
+</html>
