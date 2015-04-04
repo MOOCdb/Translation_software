@@ -29,7 +29,7 @@ def GetCourseraHashMap(vars, gen_anon):
             'map_general': {row['session_user_id']: row['user_id'] for row in rows},
             'list_raw': [row['user_id'] for row in rows],
             'qls_general': ["'{}'".format(row['session_user_id']) for row in rows],
-            'qls_forum': [row['user_id'] for row in rows],
+            'qls_forum': [str(row['user_id']) for row in rows],
         }
     
     return map

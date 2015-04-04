@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `collaborations` (
   `collaboration_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `collaboration_type_id` int(11) NOT NULL,
-  `collaboration_content` text NOT NULL,
+  `collaboration_content` text NULL,
   `collaboration_timestamp` datetime NOT NULL,
   `collaboration_parent_id` int(11) DEFAULT NULL,
   `collaboration_child_number` int(11) DEFAULT NULL,
@@ -264,8 +264,8 @@ CREATE TABLE IF NOT EXISTS `questions` (
 
 CREATE TABLE IF NOT EXISTS `resources` (
   `resource_id` int(11) NOT NULL AUTO_INCREMENT,
-  `resource_name` varchar(555) NOT NULL,
-  `resource_uri` varchar(555) NOT NULL,
+  `resource_name` varchar(555) NULL,
+  `resource_uri` varchar(555) NULL,
   `resource_type_id` int(2) NOT NULL,
   `resource_parent_id` int(11) DEFAULT NULL,
   `resource_child_number` int(11) DEFAULT NULL,
