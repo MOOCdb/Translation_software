@@ -12,6 +12,8 @@ import glob
 from sql_functions import *
 import getpass
 
+BLOCK_SIZE = 50
+
 def curate_submissions(dbName, userName, passwd, host, port):
     conn = openSQLConnectionP(dbName, userName, passwd, host, port)
     cursor = conn.cursor()
@@ -23,6 +25,7 @@ def curate_submissions(dbName, userName, passwd, host, port):
         OR   submission_is_submitted != 1
     ''' % (dbName)
     cursor.execute(invalidate_submissions_first_pass)
+    conn.commit()
     cursor.close()
     cursor = conn.cursor()
 
@@ -103,14 +106,14 @@ def curate_submissions(dbName, userName, passwd, host, port):
         else:
             valid_submissions[user_id] = {problem_id: [(submission_id,answer,attempt_number,grade,timestamp)]}
 
+
     # Modify invalid submissions in sql
-    sub_id_str = str(invalid_submissions)[1:-1]
     modify_invalids = '''
         UPDATE submissions
         SET validity = 0
-        WHERE submission_id in (%s)
-    ''' % (sub_id_str)
-    cursor.execute(modify_invalids)
+        WHERE submission_id in (%s)'''
+    block_sql_command(conn, cursor, modify_invalids, invalid_submissions,BLOCK_SIZE)
+
     cursor.close()
     cursor = conn.cursor()
 
@@ -121,13 +124,12 @@ def curate_submissions(dbName, userName, passwd, host, port):
             for sub in valid_submissions[user_id][problem_id]:
                 valid_submission_ids.append(sub[0])
 
-    sub_id_str = str(valid_submission_ids)[1:-1]
     modify_valids = '''
         UPDATE submissions
         SET validity = 1
         WHERE submission_id in (%s)
-    ''' % (sub_id_str)
-    cursor.execute(modify_valids)
+    '''
+    block_sql_command(conn, cursor, modify_valids, valid_submission_ids,BLOCK_SIZE)
+
     cursor.close()
-    conn.commit()
     conn.close()

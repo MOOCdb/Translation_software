@@ -38,7 +38,7 @@ def string_contains_word(string,word):
 
 # Return the list of the resource_type_names in order of appearance in resource_types table
 def extract_resource_types(conn):
-    command='select resource_type_id,resource_type_content from resource_types;'
+    command='select resource_type_id,resource_type_name from resource_types;'
     cursor = conn.cursor()
     cursor.execute(command)
     c = cursor.fetchall()
@@ -87,6 +87,7 @@ def populate_resource_type(dbName, userName, passwd, host, port):
         res_id=ids[i][0]
         res_type_id=ids[i][1]
         command='update resources set resource_type_id=%s where resource_id=%s' %(res_type_id,res_id)
+        conn.commit()
         cur.execute(command)
         count+=1
     closeSQLConnection(conn)

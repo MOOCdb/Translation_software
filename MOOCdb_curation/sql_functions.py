@@ -68,6 +68,21 @@ def executeSQLTimeout(connection,command, timeout):
     subproc.terminate()
     raise TimeoutException("Query ran for > %s seconds" % (timeout))
 
+def block_sql_command(conn, cursor, command, data, block_size):
+    last_block = False
+    current_offset = 0
+    while last_block == False:
+        if current_offset + block_size < len(data):
+            block = data[current_offset:current_offset+block_size]
+        else:
+            block = data[current_offset:]
+            last_block = True
+        if block:
+            data_str = str(block)[1:-1]
+            grounded_command = command % (data_str)
+            cursor.execute(grounded_command)
+            conn.commit()
+            current_offset += block_size
 
 def replaceWordsInFile(fileName,toBeReplaced, replaceBy):# toBeReplaced and replaceBy must be two string lists of same size
     txt = open(fileName, 'r').read()
