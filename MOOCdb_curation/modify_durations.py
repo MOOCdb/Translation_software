@@ -23,9 +23,12 @@ def modify_durations(dbName, userName, passwd, host, port):
                        " WHERE user_id = " + fix_id_string(str(user_id)))
 
         for event_id, calc_duration in calculate_durations(cursor.fetchall()):
+            # cursor.execute(" UPDATE observed_events"+
+            #                " SET observed_event_duration = " + str(calc_duration) +
+            #                " WHERE observed_event_id = " + fix_id_string(event_id))
             cursor.execute(" UPDATE observed_events"+
                            " SET observed_event_duration = " + str(calc_duration) +
-                           " WHERE observed_event_id = " + fix_id_string(event_id))
+                           " WHERE observed_event_id = " + fix_id_string(str(event_id))) # Alec edit 12/28/2016
             connection.commit()
         count += 1
         if count == 50:

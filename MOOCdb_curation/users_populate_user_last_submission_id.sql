@@ -6,6 +6,9 @@
 -- ALTER TABLE `moocdb`.`submissions`
 -- ADD INDEX `user-timestamp_idx` (`user_id` ASC, `submission_timestamp` ASC) ;
 
+-- SET SESSION sql_mode = ''; -- Alec edit
+set session sql_mode="NO_BACKSLASH_ESCAPES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"; -- Alec edit
+
 DROP PROCEDURE IF EXISTS `moocdb`.Alter_Table;
 
 --roll back old changes

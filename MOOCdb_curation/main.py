@@ -34,34 +34,35 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
 
 
     # fileName, wordsToBeReplaced, wordsToReplace
-    preprocessing_files = [
+    # preprocessing_files = [
+    sql_files_to_run = [
 
-        #[
-         #'initial_preprocessing.sql',
-         #['moocdb'],
-         #[dbName]
-        #],
+        # [
+        #  'initial_preprocessing.sql',
+        #  ['moocdb'],
+        #  [dbName]
+        # ],
         [
          'add_submissions_validity_column.sql',
          ['moocdb'],
          [dbName]
         ],
-        #[
-         #'problems_populate_problem_week.sql',
-         #['2012-03-05 12:00:00','moocdb'],
-         #[startDate,dbName]
-        #],
-        #[
-         #'users_populate_user_last_submission_id.sql',
-         #['INT(11)','moocdb'],
-         #['VARCHAR(50)',dbName]
-        #]
+        # [
+        #  'problems_populate_problem_week.sql',
+        #  ['2012-03-05 12:00:00','moocdb'],
+        #  [startDate,dbName]
+        # ],
+        [
+         'users_populate_user_last_submission_id.sql',
+         ['INT(11)','moocdb'],
+         ['VARCHAR(50)',dbName]
+        ]
 
     ]
 
     # SQL files
-    #run_sql_curation_files(dbName, userName, passwd, dbHost, dbPort,
-    #        preprocessing_files)
+    run_sql_curation_files(dbName, userName, passwd, dbHost, dbPort,
+           sql_files_to_run)
 
     # Python files
 
@@ -76,17 +77,17 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
     print "Curating database:"
 
     print "curating submissions table"
-    #sub.curate_submissions(dbName, userName, passwd, dbHost, dbPort)
+    # sub.curate_submissions(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
     print "Curating observed events table"
     #minimum duration for observed_events table:
     min_time = 10
-    #obv.curate_observed_events(dbName, userName, passwd, dbHost, dbPort, min_time)
+    # obv.curate_observed_events(dbName, userName, passwd, dbHost, dbPort, min_time)
     print "done"
 
     print "Curating resource table"
-    #res.populate_resource_type(dbName, userName, passwd, dbHost, dbPort)
+    res.populate_resource_type(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
 
@@ -129,4 +130,12 @@ def run_curation_all(userName=None, passwd = None, dbs = None, dbHost = None,
 
 if __name__ == "__main__":
     #run_curation_all()
-    curate(dbName = '201x_2013_spring')
+    # curate(dbName = '201x_2013_spring')
+    curate(dbName             = 'moocdb',
+         userName           = 'root',
+         # passwd
+         dbHost             = 'localhost',
+         # dbPort
+         #This date is year-month-day
+         startDate         = '2013-09-24 13:14:07', # last date is 2014-03-11 05:09:03
+        )
