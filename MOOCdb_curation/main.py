@@ -3,7 +3,8 @@ import getpass
 import os
 
 #curation
-import modify_durations as md
+# import modify_durations as md
+import new_modify_durations as md
 import resources as res
 import submissions as sub
 import observed_events as obv
@@ -42,14 +43,14 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
         #  ['moocdb'],
         #  [dbName]
         # ],
-        [
-         'add_submissions_validity_column.sql',
-         ['moocdb'],
-         [dbName]
-        ],
+        # [
+        #  'add_submissions_validity_column.sql',
+        #  ['moocdb'],
+        #  [dbName]
+        # ],
         # [
         #  'problems_populate_problem_week.sql',
-        #  ['2012-03-05 12:00:00','moocdb'],
+        #  ['2013-09-24 13:14:07','moocdb'],
         #  [startDate,dbName]
         # ],
         [
@@ -71,7 +72,7 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
         #-durations were originally calculated wrong in observed_events
         #this fixes that
         #takes a long time (~3-4 hours per db)
-    md.modify_durations(dbName, userName, passwd, dbHost, dbPort)
+    # md.modify_durations(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
     print "Curating database:"
@@ -87,7 +88,7 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
     print "done"
 
     print "Curating resource table"
-    res.populate_resource_type(dbName, userName, passwd, dbHost, dbPort)
+    # res.populate_resource_type(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
 
