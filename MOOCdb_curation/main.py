@@ -54,7 +54,7 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
         #  [startDate,dbName]
         # ],
         [
-         'users_populate_user_last_submission_id.sql',
+         'alec_users_populate_user_last_submission_id.sql',
          ['INT(11)','moocdb'],
          ['VARCHAR(50)',dbName]
         ]
@@ -101,6 +101,7 @@ def run_sql_curation_files(dbName, userName, passwd, dbHost, dbPort,preprocessin
         print fileLocation
         newFile = sql_functions.replaceWordsInFile(fileLocation, toBeReplaced, replaceBy)
         print "executing: ", fileName
+        print 'newFile \n',newFile
         sql_functions.executeSQL(conn, newFile)
         conn.commit()
         print "done"
