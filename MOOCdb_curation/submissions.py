@@ -112,6 +112,9 @@ def curate_submissions(dbName, userName, passwd, host, port):
         UPDATE submissions
         SET validity = 0
         WHERE submission_id in (%s)'''
+    # Alec edit - fix invalid_submissions list by casting to int
+    invalid_submissions = [int(s) for s in invalid_submissions]
+
     block_sql_command(conn, cursor, modify_invalids, invalid_submissions,BLOCK_SIZE)
 
     cursor.close()
@@ -129,6 +132,9 @@ def curate_submissions(dbName, userName, passwd, host, port):
         SET validity = 1
         WHERE submission_id in (%s)
     '''
+    # Alec edit - fix valid_submission_ids list by casting to int
+    valid_submission_ids = [int(s) for s in valid_submission_ids]
+    
     block_sql_command(conn, cursor, modify_valids, valid_submission_ids,BLOCK_SIZE)
 
     cursor.close()

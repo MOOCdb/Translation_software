@@ -43,16 +43,16 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
         #  ['moocdb'],
         #  [dbName]
         # ],
-        # [
-        #  'add_submissions_validity_column.sql',
-        #  ['moocdb'],
-        #  [dbName]
-        # ],
-        # [
-        #  'problems_populate_problem_week.sql',
-        #  ['2013-09-24 13:14:07','moocdb'],
-        #  [startDate,dbName]
-        # ],
+        [
+         'add_submissions_validity_column.sql',
+         ['moocdb'],
+         [dbName]
+        ],
+        [
+         'problems_populate_problem_week.sql',
+         ['2013-09-24 13:14:07','moocdb'],
+         [startDate,dbName]
+        ],
         [
          'alec_users_populate_user_last_submission_id.sql',
          ['INT(11)','moocdb'],
@@ -72,23 +72,23 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
         #-durations were originally calculated wrong in observed_events
         #this fixes that
         #takes a long time (~3-4 hours per db)
-    # md.modify_durations(dbName, userName, passwd, dbHost, dbPort)
+    md.modify_durations(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
     print "Curating database:"
 
     print "curating submissions table"
-    # sub.curate_submissions(dbName, userName, passwd, dbHost, dbPort)
+    sub.curate_submissions(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
     print "Curating observed events table"
     #minimum duration for observed_events table:
     min_time = 10
-    # obv.curate_observed_events(dbName, userName, passwd, dbHost, dbPort, min_time)
+    obv.curate_observed_events(dbName, userName, passwd, dbHost, dbPort, min_time)
     print "done"
 
     print "Curating resource table"
-    # res.populate_resource_type(dbName, userName, passwd, dbHost, dbPort)
+    res.populate_resource_type(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
 
@@ -101,7 +101,6 @@ def run_sql_curation_files(dbName, userName, passwd, dbHost, dbPort,preprocessin
         print fileLocation
         newFile = sql_functions.replaceWordsInFile(fileLocation, toBeReplaced, replaceBy)
         print "executing: ", fileName
-        print 'newFile \n',newFile
         sql_functions.executeSQL(conn, newFile)
         conn.commit()
         print "done"

@@ -58,6 +58,9 @@ def curate_observed_events(dbName, userName, passwd, host, port, min_time = 10):
         SET validity = 1
         WHERE observed_event_id in (%s)
     '''
+    # Alec edit - fix valid_event_ids list by casting to int
+    valid_event_ids = [int(s) for s in valid_event_ids]
+
     block_sql_command(conn, cursor, modify_valids, valid_event_ids, BLOCK_SIZE)
 
     cursor.close()
@@ -69,6 +72,9 @@ def curate_observed_events(dbName, userName, passwd, host, port, min_time = 10):
             SET validity = 0
             WHERE observed_event_id in (%s)
         '''
+        # Alec edit - fix invalid_event_ids list by casting to int
+        invalid_event_ids = [int(s) for s in invalid_event_ids]
+        
         block_sql_command(conn, cursor, modify_invalids, invalid_event_ids, BLOCK_SIZE)
 
         cursor.close()
