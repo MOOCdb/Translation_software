@@ -9,10 +9,36 @@ import glob
 import numpy as np
 
 
+######################################## RUN SQL CURATION FILES ###############################################
+
+def run_sql_curation_files(conn,preprocessing_files):
+    # conn = sql_functions.openSQLConnectionP(dbName, userName, passwd, dbHost,dbPort)
+
+    for fileName, toBeReplaced, replaceBy in preprocessing_files:
+        fileLocation = os.path.dirname(os.path.realpath(__file__))+'/'+ fileName
+        print fileLocation
+        newFile = replaceWordsInFile(fileLocation, toBeReplaced, replaceBy)
+        print "executing: ", fileName
+        executeSQL(conn, newFile)
+        conn.commit()
+        print "done"
+
+    # sql_functions.closeSQLConnection(conn)
+
+
 ######################################## MODIFY DURATIONS ###############################################
 
 def modify_durations(connection,MAX_DURATION_SECONDS = 3600,DEFAULT_DURATION_SECONDS = 100,BLOCK_SIZE = 50000):
-    # DEFAULT_DURATION_SECONDS is duration if next event is > MAX_DURATION_SECONDS away
+    '''
+    Updates duration of events to DEFAULT_DURATION_SECONDS if next event is > MAX_DURATION_SECONDS away
+
+    Args
+        connection: connection to MySQL database
+        MAX_DURATION_SECONDS: maximum duration can be before updating
+        DEFAULT_DURATION_SECONDS: default duration when updating
+        BLOCK_SIZE: Number of rows to update at once
+
+    '''
     cursor = connection.cursor()
 
     cursor.execute('SELECT DISTINCT(user_id) FROM observed_events')
@@ -53,6 +79,17 @@ def modify_durations(connection,MAX_DURATION_SECONDS = 3600,DEFAULT_DURATION_SEC
     # connection.close()
 
 def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS,DEFAULT_DURATION_SECONDS,BLOCK_SIZE):
+    '''
+    Helper function for modify_durations that calculates the duration between two timestamps
+
+    Args
+        timestamp1: beginning timestamp
+        timestamp2: ending timestamp
+        MAX_DURATION_SECONDS: maximum duration can be before updating
+        DEFAULT_DURATION_SECONDS: default duration when updating
+        BLOCK_SIZE: Number of rows to update at once
+
+    '''
     duration = int((timestamp2 - timestamp1).total_seconds())
     truncated_duration = duration if duration <= MAX_DURATION_SECONDS else DEFAULT_DURATION_SECONDS
     return truncated_duration
@@ -61,6 +98,14 @@ def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS,DEFAULT_DURATION_S
 ######################################## CURATE OBSERVED EVENTS ###############################################
 
 def curate_observed_events(conn,min_time = 10,BLOCK_SIZE=50):
+    '''
+    Updates the validity column of valid events to 1 and invalid events to 0
+
+    Args
+        connection: connection to MySQL database
+        BLOCK_SIZE: Number of rows to update at once
+
+    '''
     # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
     #cursor = conn.cursor()
     ## invalidate events with duration less than min_time
@@ -129,6 +174,14 @@ def curate_observed_events(conn,min_time = 10,BLOCK_SIZE=50):
     # conn.close()
 
 def events_equal(row1, row2):
+    '''
+    Helper function for curate_observed_events, tests if two lists pertaining to two events are equal
+
+    Args
+        row1: list to compare
+        row2: list to compare
+
+    '''
     # 0 = user_id
     # 1 = timestamp
     # 2 = duration
@@ -142,6 +195,12 @@ def events_equal(row1, row2):
 ######################################## CURATE RESOURCES ###############################################
 
 def extract_NumberEnrollments(conn):
+    '''
+    Extracts number of distinct user_ids
+
+    Args
+        conn: connection to MySQL database
+    '''
     txt='Select count(distinct user_id) from observed_events'
     cursor = conn.cursor()
     cursor.execute(txt)
@@ -151,8 +210,10 @@ def extract_NumberEnrollments(conn):
         c = c[0][0]
     return c
 
-# Test if string contains word in it
 def string_contains_word(string,word):
+    '''
+    Test if string contains word in it
+    '''
     l_word=len(word)
     l=len(string)
     instance=0
@@ -163,8 +224,13 @@ def string_contains_word(string,word):
         i+=1
     return instance>0
 
-# Return the list of the resource_type_names in order of appearance in resource_types table
 def extract_resource_types(conn):
+    '''
+    Return the list of the resource_type_names in order of appearance in resource_types table
+
+    Args
+        conn: connection to MySQL database
+    '''
     command='select resource_type_id,resource_type_name from resource_types;'
     cursor = conn.cursor()
     cursor.execute(command)
@@ -176,9 +242,11 @@ def extract_resource_types(conn):
             res_types.append(c[i][1])
     return res_types
 
-# Return the resource_type_id (=index in the list of resource_type_names) corresponding to a url
-# and 0 if the url does not match any resource_type names
 def compute_resource_type_id(res_types,url):
+    '''
+    Return the resource_type_id (=index in the list of resource_type_names) corresponding to a url
+    and 0 if the url does not match any resource_type names
+    '''
     result=0
     for x in res_types:
         if string_contains_word(url,x):
@@ -186,9 +254,11 @@ def compute_resource_type_id(res_types,url):
     return result
 
 
-# Populate the resource_type_id for the resources having resource_type_id=0
-# when uri matches one of the resource_type_names in the resource_types table
 def populate_resource_type(conn):
+    '''
+    Populate the resource_type_id for the resources having resource_type_id=0
+    when uri matches one of the resource_type_names in the resource_types table
+    '''
 
     # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
     # Extract resources types of the database
@@ -231,6 +301,11 @@ def curate_submissions(conn,dbName,BLOCK_SIZE = 50):
     Created: 5/24/2015 by Ben Schreck
 
     Curates submissions (and indirectly assessments)
+
+    Args
+        conn: connection to MySQL database
+        dbName: name of database
+        BLOCK_SIZE: Number of rows to update at once
     """
 
     # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
