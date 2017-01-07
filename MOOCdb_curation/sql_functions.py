@@ -78,6 +78,7 @@ def block_sql_command(conn, cursor, command, data, block_size):
             block = data[current_offset:]
             last_block = True
         if block:
+            # block = [int(s) for s in block] # Alec edit
             data_str = str(block)[1:-1]
             grounded_command = command % (data_str)
             cursor.execute(grounded_command)

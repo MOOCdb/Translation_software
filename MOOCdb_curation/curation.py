@@ -11,9 +11,8 @@ import numpy as np
 
 ######################################## MODIFY DURATIONS ###############################################
 
-def modify_durations(dbName, userName, passwd, host, port,MAX_DURATION_SECONDS = 3600,DEFAULT_DURATION_SECONDS = 100,BLOCK_SIZE = 50000):
+def modify_durations(connection,MAX_DURATION_SECONDS = 3600,DEFAULT_DURATION_SECONDS = 100,BLOCK_SIZE = 50000):
     # DEFAULT_DURATION_SECONDS is duration if next event is > MAX_DURATION_SECONDS away
-    connection = openSQLConnectionP(dbName, userName, passwd, host, port)
     cursor = connection.cursor()
 
     cursor.execute('SELECT DISTINCT(user_id) FROM observed_events')
@@ -38,7 +37,7 @@ def modify_durations(dbName, userName, passwd, host, port,MAX_DURATION_SECONDS =
                 rows.append(('', datetime.datetime.max))
                 last_block = True
             for i,row in enumerate(rows[:-1]):
-                duration = calc_duration(row[1], rows[i+1][1])
+                duration = calc_duration(row[1], rows[i+1][1],MAX_DURATION_SECONDS,DEFAULT_DURATION_SECONDS,BLOCK_SIZE)
                 cursor.execute('''UPDATE observed_events
                             SET observed_event_duration = '%s'
                             WHERE observed_event_id = '%s'
@@ -51,9 +50,9 @@ def modify_durations(dbName, userName, passwd, host, port,MAX_DURATION_SECONDS =
             begin = time.time()
             count = 0
     cursor.close()
-    connection.close()
+    # connection.close()
 
-def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS = 3600,DEFAULT_DURATION_SECONDS = 100,BLOCK_SIZE = 50000):
+def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS,DEFAULT_DURATION_SECONDS,BLOCK_SIZE):
     duration = int((timestamp2 - timestamp1).total_seconds())
     truncated_duration = duration if duration <= MAX_DURATION_SECONDS else DEFAULT_DURATION_SECONDS
     return truncated_duration
@@ -61,13 +60,8 @@ def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS = 3600,DEFAULT_DUR
 
 ######################################## CURATE OBSERVED EVENTS ###############################################
 
-def curate_observed_events(dbName, userName, passwd, host, port, min_time = 10, BLOCK_SIZE = 50):
-    """
-    Created: 5/24/2015 by Ben Schreck
-
-    Curates observed events
-    """
-    conn = openSQLConnectionP(dbName, userName, passwd, host, port)
+def curate_observed_events(conn,min_time = 10,BLOCK_SIZE=50):
+    # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
     #cursor = conn.cursor()
     ## invalidate events with duration less than min_time
     #invalidate_durations = '''
@@ -90,7 +84,9 @@ def curate_observed_events(dbName, userName, passwd, host, port, min_time = 10, 
         WHERE observed_event_duration >= '%s'
         ORDER BY e.user_id, e.observed_event_timestamp ASC
     ''' % (min_time)
-
+# Do we need this?
+#        INNER JOIN urls as u
+#         ON u.url_id = e.url_id
     cursor.execute(select_potential_events)
     data = cursor.fetchall()
     cursor.close()
@@ -130,7 +126,7 @@ def curate_observed_events(dbName, userName, passwd, host, port, min_time = 10, 
 
         cursor.close()
 
-    conn.close()
+    # conn.close()
 
 def events_equal(row1, row2):
     # 0 = user_id
@@ -192,9 +188,9 @@ def compute_resource_type_id(res_types,url):
 
 # Populate the resource_type_id for the resources having resource_type_id=0
 # when uri matches one of the resource_type_names in the resource_types table
-def populate_resource_type(dbName, userName, passwd, host, port):
+def populate_resource_type(conn):
 
-    conn = openSQLConnectionP(dbName, userName, passwd, host, port)
+    # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
     # Extract resources types of the database
     res_types=extract_resource_types(conn)
 
@@ -230,14 +226,14 @@ def populate_resource_type(dbName, userName, passwd, host, port):
 
 ######################################## CURATE SUBMISSIONS ###############################################
 
-def curate_submissions(dbName, userName, passwd, host, port,BLOCK_SIZE = 50):
+def curate_submissions(conn,dbName,BLOCK_SIZE = 50):
     """
     Created: 5/24/2015 by Ben Schreck
 
     Curates submissions (and indirectly assessments)
     """
 
-    conn = openSQLConnectionP(dbName, userName, passwd, host, port)
+    # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
     cursor = conn.cursor()
 
     invalidate_submissions_first_pass = '''
@@ -360,6 +356,6 @@ def curate_submissions(dbName, userName, passwd, host, port,BLOCK_SIZE = 50):
     block_sql_command(conn, cursor, modify_valids, valid_submission_ids,BLOCK_SIZE)
 
     cursor.close()
-    conn.close()
+    # conn.close()
 
 
