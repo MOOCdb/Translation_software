@@ -2,12 +2,8 @@ import sql_functions
 import getpass
 import os
 
-#curation
-# import modify_durations as md
-import new_modify_durations as md
-import resources as res
-import submissions as sub
-import observed_events as obv
+import curation as cu
+
 '''
 
 Author : Sebastien Boyer
@@ -72,23 +68,23 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
         #-durations were originally calculated wrong in observed_events
         #this fixes that
         #takes a long time (~3-4 hours per db)
-    md.modify_durations(dbName, userName, passwd, dbHost, dbPort)
+    cu.modify_durations(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
     print "Curating database:"
 
     print "curating submissions table"
-    sub.curate_submissions(dbName, userName, passwd, dbHost, dbPort)
+    cu.curate_submissions(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
     print "Curating observed events table"
     #minimum duration for observed_events table:
     min_time = 10
-    obv.curate_observed_events(dbName, userName, passwd, dbHost, dbPort, min_time)
+    cu.curate_observed_events(dbName, userName, passwd, dbHost, dbPort, min_time)
     print "done"
 
     print "Curating resource table"
-    res.populate_resource_type(dbName, userName, passwd, dbHost, dbPort)
+    cu.populate_resource_type(dbName, userName, passwd, dbHost, dbPort)
     print "done"
 
 
