@@ -12,8 +12,6 @@ import numpy as np
 ######################################## RUN SQL CURATION FILES ###############################################
 
 def run_sql_curation_files(conn,preprocessing_files):
-    # conn = sql_functions.openSQLConnectionP(dbName, userName, passwd, dbHost,dbPort)
-
     for fileName, toBeReplaced, replaceBy in preprocessing_files:
         fileLocation = os.path.dirname(os.path.realpath(__file__))+'/'+ fileName
         print fileLocation
@@ -22,8 +20,6 @@ def run_sql_curation_files(conn,preprocessing_files):
         executeSQL(conn, newFile)
         conn.commit()
         print "done"
-
-    # sql_functions.closeSQLConnection(conn)
 
 
 ######################################## MODIFY DURATIONS ###############################################
@@ -76,7 +72,6 @@ def modify_durations(connection,MAX_DURATION_SECONDS = 3600,DEFAULT_DURATION_SEC
             begin = time.time()
             count = 0
     cursor.close()
-    # connection.close()
 
 def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS,DEFAULT_DURATION_SECONDS,BLOCK_SIZE):
     '''
@@ -106,17 +101,6 @@ def curate_observed_events(conn,min_time = 10,BLOCK_SIZE=50):
         BLOCK_SIZE: Number of rows to update at once
 
     '''
-    # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
-    #cursor = conn.cursor()
-    ## invalidate events with duration less than min_time
-    #invalidate_durations = '''
-        #UPDATE observed_events
-        #SET validity = 0
-        #WHERE observed_event_duration < '%s'
-    #''' % (min_time)
-    #cursor.execute(invalidate_durations)
-    #conn.commit()
-    #cursor.close()
 
     cursor = conn.cursor()
 
@@ -150,7 +134,7 @@ def curate_observed_events(conn,min_time = 10,BLOCK_SIZE=50):
         SET validity = 1
         WHERE observed_event_id in (%s)
     '''
-    # Alec edit - fix valid_event_ids list by casting to int
+    # Edit - fix valid_event_ids list by casting to int
     valid_event_ids = [int(s) for s in valid_event_ids]
 
     block_sql_command(conn, cursor, modify_valids, valid_event_ids, BLOCK_SIZE)
@@ -164,14 +148,12 @@ def curate_observed_events(conn,min_time = 10,BLOCK_SIZE=50):
             SET validity = 0
             WHERE observed_event_id in (%s)
         '''
-        # Alec edit - fix invalid_event_ids list by casting to int
+        # Edit - fix invalid_event_ids list by casting to int
         invalid_event_ids = [int(s) for s in invalid_event_ids]
         
         block_sql_command(conn, cursor, modify_invalids, invalid_event_ids, BLOCK_SIZE)
 
         cursor.close()
-
-    # conn.close()
 
 def events_equal(row1, row2):
     '''
@@ -260,7 +242,6 @@ def populate_resource_type(conn):
     when uri matches one of the resource_type_names in the resource_types table
     '''
 
-    # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
     # Extract resources types of the database
     res_types=extract_resource_types(conn)
 
@@ -308,7 +289,6 @@ def curate_submissions(conn,dbName,BLOCK_SIZE = 50):
         BLOCK_SIZE: Number of rows to update at once
     """
 
-    # conn = openSQLConnectionP(dbName, userName, passwd, host, port)
     cursor = conn.cursor()
 
     invalidate_submissions_first_pass = '''
@@ -405,7 +385,7 @@ def curate_submissions(conn,dbName,BLOCK_SIZE = 50):
         UPDATE submissions
         SET validity = 0
         WHERE submission_id in (%s)'''
-    # Alec edit - fix invalid_submissions list by casting to int
+    # Edit - fix invalid_submissions list by casting to int
     invalid_submissions = [int(s) for s in invalid_submissions]
 
     block_sql_command(conn, cursor, modify_invalids, invalid_submissions,BLOCK_SIZE)
@@ -425,12 +405,11 @@ def curate_submissions(conn,dbName,BLOCK_SIZE = 50):
         SET validity = 1
         WHERE submission_id in (%s)
     '''
-    # Alec edit - fix valid_submission_ids list by casting to int
+    # Edit - fix valid_submission_ids list by casting to int
     valid_submission_ids = [int(s) for s in valid_submission_ids]
     
     block_sql_command(conn, cursor, modify_valids, valid_submission_ids,BLOCK_SIZE)
 
     cursor.close()
-    # conn.close()
 
 
