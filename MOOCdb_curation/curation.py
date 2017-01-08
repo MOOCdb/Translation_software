@@ -12,6 +12,13 @@ import numpy as np
 ######################################## RUN SQL CURATION FILES ###############################################
 
 def run_sql_curation_files(conn,preprocessing_files):
+    '''
+    Runs SQL files that execute curation
+
+    Args
+        conn: connection to MySQL database
+        preprocessing_files: list of SQL files to be run and their arguments
+    '''
     for fileName, toBeReplaced, replaceBy in preprocessing_files:
         fileLocation = os.path.dirname(os.path.realpath(__file__))+'/'+ fileName
         print fileLocation
