@@ -66,7 +66,7 @@ def modify_durations(connection,MAX_DURATION_SECONDS = 3600,DEFAULT_DURATION_SEC
                 rows.append(('', datetime.datetime.max))
                 last_block = True
             for i,row in enumerate(rows[:-1]):
-                duration = calc_duration(row[1], rows[i+1][1],MAX_DURATION_SECONDS,DEFAULT_DURATION_SECONDS,BLOCK_SIZE)
+                duration = calc_duration(row[1], rows[i+1][1],MAX_DURATION_SECONDS,DEFAULT_DURATION_SECONDS)
                 cursor.execute('''UPDATE observed_events
                             SET observed_event_duration = '%s'
                             WHERE observed_event_id = '%s'
@@ -80,7 +80,7 @@ def modify_durations(connection,MAX_DURATION_SECONDS = 3600,DEFAULT_DURATION_SEC
             count = 0
     cursor.close()
 
-def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS,DEFAULT_DURATION_SECONDS,BLOCK_SIZE):
+def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS,DEFAULT_DURATION_SECONDS):
     '''
     Helper function for modify_durations that calculates the duration between two timestamps
 
@@ -89,7 +89,6 @@ def calc_duration(timestamp1, timestamp2,MAX_DURATION_SECONDS,DEFAULT_DURATION_S
         timestamp2: ending timestamp
         MAX_DURATION_SECONDS: maximum duration can be before updating
         DEFAULT_DURATION_SECONDS: default duration when updating
-        BLOCK_SIZE: Number of rows to update at once
 
     '''
     duration = int((timestamp2 - timestamp1).total_seconds())
