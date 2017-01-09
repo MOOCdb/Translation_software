@@ -37,7 +37,7 @@ def curate(dbName = None, userName=None, passwd=None, dbHost=None, dbPort=None,
          [startDate,dbName]
         ],
         [
-         'new_users_populate_user_last_submission_id.sql',
+         'users_populate_user_last_submission_id.sql',
          ['INT(11)','moocdb'],
          ['VARCHAR(50)',dbName]
         ]
