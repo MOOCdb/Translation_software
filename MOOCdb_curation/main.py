@@ -3,7 +3,7 @@ import getpass
 import os
 from sql_functions import *
 
-import curation as cu
+import curate as cu
 
 '''
 Author : Sebastien Boyer
