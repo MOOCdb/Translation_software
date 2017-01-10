@@ -21,7 +21,6 @@ def run_sql_curation_files(conn,preprocessing_files):
     '''
     for fileName, toBeReplaced, replaceBy in preprocessing_files:
         fileLocation = os.path.dirname(os.path.realpath(__file__))+'/'+ fileName
-        print fileLocation
         newFile = replaceWordsInFile(fileLocation, toBeReplaced, replaceBy)
         print "executing: ", fileName
         executeSQL(conn, newFile)
